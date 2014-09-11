@@ -1,20 +1,34 @@
 <!DOCTYPE html>
 <html>
-
   {% include head.html %}
-
   <body>
-
-    {% include header.html %}
-
-    <div class="page-content">
-      <div class="wrapper">
-        {{ content }}
+    <div class="ui two column page grid">
+      <div class="left floated three wide column">
+        <div class="ui vertical fluid menu">
+          <a class="item" href="{{ "/" | preppend: site.baseurl }}">
+            <i class="icon file"></i>
+            Blog
+          </a>
+          <a class="item" href="{{ "//github.com/" | append: site.github_username }}">
+            <i class="icon github"></i>
+            GitHub
+          </a>
+          <a class="item" href="{{ "/about/" | preppend: site.baseurl }}">
+            <i class="icon info"></i>
+            About
+          </a>
+        </div>
+      </div>
+      <div class="thirteen wide column">
+        <div class="ui segment">
+          <!--{% include header.html %}-->
+          <div class="page-content">
+            <div class="wrapper">
+              {{ content }}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-    {% include footer.html %}
-
   </body>
-
 </html>
