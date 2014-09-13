@@ -8,10 +8,7 @@
 	<div class="ui selection list no-bottom-margin">
 	{% for post in site.posts %}
 		{% if post.project_id == include.project_id %}
-		<a class="item" href="{{ post.url | prepend: site.baseurl }}">
-			<div class="header">{{ post.title }}</div>
-			{{ post.description }}<br/> 
-		</div>
+			{% include post.html post=post %}
 		{% endif %}
 	{% endfor %}
 	</div>
