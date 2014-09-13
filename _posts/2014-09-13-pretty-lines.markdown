@@ -8,7 +8,7 @@ project_id: fsharp-drawer
 ---
 Today I'll talk about my recent F# project.
 
-If you're played [LineRider](http://www.linerider1.net/) you might be familiar with trying to 
+If you've played [LineRider](http://www.linerider1.net/) you might be familiar with trying to 
 make a curve using only straight lines. The way you do it is by drawing tangents. That 
 usually makes the curve more precise than what you'd get drawing it in a single stroke 
 and, what's more important in this case, it makes pretty patterns.
