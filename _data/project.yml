@@ -1,3 +1,3 @@
-a:
-    name: test
-    description: this is a test project
+fsharp-drawer:
+    name: Bezier
+    description: "A small drawing library written in F# used to draw Bezier curves in an interesting way"
