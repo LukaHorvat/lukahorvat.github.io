@@ -5,6 +5,10 @@
     <div class="ui two column page grid">
       <div class="left floated three wide column">
         <div class="ui vertical fluid menu">
+          <spap class="item">
+            <h3>Interesting</h3>
+            <h5 style="color: lightgrey;">...very interesting</h5>
+          </span>
           <a class="item" href="{{ "/" | preppend: site.baseurl }}">
             <i class="icon file"></i>
             Blog
@@ -12,6 +16,10 @@
           <a class="item" href="{{ "//github.com/" | append: site.github_username }}">
             <i class="icon github"></i>
             GitHub
+          </a>
+          <a class="item" href="{{ "/projects/" | preppend: site.baseurl }}">
+            <i class="icon lab"></i>
+            Projects
           </a>
           <a class="item" href="{{ "/about/" | preppend: site.baseurl }}">
             <i class="icon info"></i>
@@ -21,7 +29,6 @@
       </div>
       <div class="thirteen wide column">
         <div class="ui segment">
-          <!--{% include header.html %}-->
           <div class="page-content">
             <div class="wrapper">
               {{ content }}

@@ -1,0 +1,13 @@
+---
+layout: default
+title: "Projects"
+---
+<header class="post-header">
+	<h1 class="post-title">{{ page.title }}</h1>
+</header>
+These are the projects I blogged about
+
+{% for project in site.data.project %}
+	{% assign name = project[0] %}
+	{% include project.html project_id=name %}
+{% endfor %}

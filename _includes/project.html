@@ -1,0 +1,19 @@
+<div class="ui segment">
+	<h2 class="header no-bottom-margin" style="line-height: 20px"><b>{{ site.data.project[include.project_id].name }}</b></h2>
+	<h4>{{ site.data.project[include.project_id].description }}</h4>
+	<a class="fluid ui black button" href="{{ "//github.com/" | append: site.github_username | append: "/" | append: site.data.project[include.project_id].name }}">
+		<i class="github icon"></i>
+		View code
+	</a>
+	<div class="ui selection list no-bottom-margin">
+	{% for post in site.posts %}
+		{% if post.project_id == include.project_id %}
+		<a class="item" href="{{ post.url | prepend: site.baseurl }}">
+			<div class="header">{{ post.title }}</div>
+			{{ post.description }}<br/> 
+		</div>
+		{% endif %}
+	{% endfor %}
+	</div>
+</div>
+<br/>
