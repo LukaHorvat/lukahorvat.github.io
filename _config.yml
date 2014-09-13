@@ -11,6 +11,6 @@ url: "http://lukahorvat.github.io" # the base hostname & protocol for your site
 github_username: LukaHorvat
 
 # Build settings
-highlighter: true
+highlighter: pygments
 markdown: kramdown
 permalink: pretty
