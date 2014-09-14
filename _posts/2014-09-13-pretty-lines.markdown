@@ -36,7 +36,7 @@ type Picture =
 
 So we can draw a `Picture` which is either a `Line` or a collection of `Picture`s.
 
-We define a couple of utility function to manipulate our `Picture`s.
+We define a couple of utility functions to manipulate our `Picture`s.
 
 {% highlight ocaml %}
 let rec allLines picture =
