@@ -1,7 +1,7 @@
 ---
 layout: post
-title: Type-level magic
-description: "Using functional dependencies for type level computation"
+title: Type-level magic in Haskell
+description: "Using functional dependencies for type-level computation in Haskell"
 date: 2014-12-03 18:43:00
 categories: programming
 project_id: compose
