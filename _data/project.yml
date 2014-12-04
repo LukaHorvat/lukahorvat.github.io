@@ -1,3 +1,6 @@
 fsharp-drawer:
     name: Bezier
     description: "A small drawing library written in F# used to draw Bezier curves in an interesting way"
+compose:
+    name: Compose
+    description: "A component based game library for Haskell"
