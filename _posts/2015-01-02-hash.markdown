@@ -1,0 +1,171 @@
+---
+layout: post
+title: Type inference in a primitive type system
+description: Writing a type checker for a bash-like language
+date: 2015-01-02 16:11:00
+categories: programming
+project_id: hash
+---
+As a part of a course I'm taking, we were tasked to write an interpreter for a language intended to be used like bash.
+While the actual assignment specs were pretty tame, I decided to spice things up a bit and include an actual type
+system with complete type inference.
+
+It's very simplistic with only 4 types. Strings, boolean value, numbers and the unit type. There's also the 'any' type
+that doesn't add any information to the inference process and is used for special cases.
+While that isn't really impressive, it was fun to write and I've never done it before, so why not write a run-down of
+how I decided to do it.
+
+The structure
+-------------
+
+The source code is parsed into an AST. We differentiate between expressions and statements.
+An expression can be a number/string/boolean literal, a variable or a function name followed by a list of expressions
+that represent function application.
+A statement can be an assignment, a bare expression, if/while control flow structures, a return or just a block of
+code represented as a list of statements.
+
+{% highlight haskell %}
+data Expression = Number Rational
+                | String Text
+                | Boolean Bool
+                | Variable Text
+                | Binary Text Expression Expression
+                | Unary Text Expression
+                | Application Text [Expression]
+
+data Statement = Assignment Text Expression
+               | Line Expression
+               | If Expression Statement (Maybe Statement)
+               | While Expression Statement
+               | Return Expression
+               | Routine [Statement]
+{% endhighlight %}
+
+Preparation
+-----------
+
+The way we represent a program in the type solver is also important.
+Everything that can have a type attached to it I call a `TypePoint`. There 4 things that are `TypePoint`s.
+Local variables, the return values of functions, their arguments and types themselves.
+As I said before, a type is a `Number`, a `Boolean`, a `String`, the `Unit` type or `Any`.
+
+
+{% highlight haskell %}
+data TypePoint = Variable Text Text 
+               | Return Text 
+               | Argument Text Int 
+               | Literal Type 
+
+data Type = Number | Boolean | String | Unit | Any
+{% endhighlight %}
+
+While this is a complete type inference (type annotation syntax isn't even included in the language), that doesn't
+mean much. The only way to get polymorphism is with the `Any` type, but I've disallowed writing non-native functions
+that are polymorphic. So while it's possible to make a function that only prints it's argument, that function
+would be bound to the type of it's argument the first time you apply it somewhere in your code.
+You can, of course, define a function and never use it. In that case it's type is considered undecided.
+
+The solver works by threading a state through the algorithm. The state holds all the currently added `TypePoint`s,
+the actual types attached to them, a list of "stuff that doesn't make sense" and a list of connections.
+The things that don't make sense are errors in the code. If you use a function in a wrong way, it gets reported to
+the list.
+Connections are a part of the algorithm I'll describe in the next section.
+
+{% highlight haskell %}
+data State = State 
+           { points :: [TypePoint]
+           , types :: Map TypePoint Type
+           , connections :: Map TypePoint [TypePoint] 
+           , contradictions :: [Text] }
+{% endhighlight %}
+
+We traverse the AST and collect up all the mentioned `TypePoint`s. There's no lexical scoping other than each 
+function's scope so it's enough to tag local variables with the name of the function they belong to.
+
+The algorithm
+-------------
+
+We traverse the AST again. This time we're looking for "connections". It's the clues that will collectively tell us
+what's what. We need a way to convert an `Expression` into a `TypePoint` we can attach to. An expression literal gets
+converted into a type literal. A variable converts to a variable `TypePoint` and function application converts to the
+return type of the function being applied.
+
+There are a couple of special cases built into the engine itself. One of those is the `id` function that is of type
+`Any -> Any`, but actually connects the type of it's argument to the type it returns.
+
+{% highlight haskell %}
+etPoint :: Text -> AST.Expression -> TypePoint
+getPoint _    (AST.Number _)        = Literal Number
+getPoint _    (AST.String _)        = Literal String
+getPoint _    (AST.Boolean _)       = Literal Boolean
+getPoint name (AST.Variable v)      = Variable name v
+getPoint name (AST.Application f es) = case (f, es) of
+    ("id", a : _) -> getPoint name a --Redirects to the return type of the argument
+    _             -> Return f
+{% endhighlight %}
+
+When traversing, we look for functions applications. There, we connect the actual expressions that are being
+passed, to the types of the function's arguments. We also know that `If` and `While` have boolean expressions
+as conditions, so we can connect any expression in a condition to the `Boolean` type literal.
+
+Another special case is the equality checking operator. It's type is `Any -> Any -> Any`, but it actually connects
+the types of it's arguments.
+
+{% highlight haskell %}
+connectStatement :: Text -> State -> Statement -> State
+connectStatement name state stmt = case stmt of
+    AST.Line expr     -> connectExpression name state expr
+    AST.If cond th el -> 
+        let step3 = connectStatement name step2 th 
+            step2 = connectExpression name step1 cond
+            step1 = isBool cond state
+        in case el of
+            Just ex -> connectStatement name step3 ex
+            Nothing -> step3
+    AST.While cond s -> 
+        let step3 = connectStatement name step2 s
+            step2 = connectExpression name step1 cond
+            step1 = isBool cond state
+        in step3
+    AST.Routine ss   -> foldl' (connectStatement name) state ss
+    _                -> addConnection this (getPoint name expr) newState
+    where (this, expr) = case stmt of
+              AST.Assignment s e -> (Variable name s, e)
+              AST.Return e       -> (Return name, e)
+          newState = case expr of AST.Application _ es -> connectExpression name state expr ; _ -> state
+          isBool e = addConnection (getPoint name e) (Literal Boolean)
+
+connectExpression :: Text -> State -> Expression -> State
+connectExpression name state expr = case expr of
+    AST.Application f es | f `elem` ["eq", "neq"] -> connect es 
+                         | otherwise              -> foldl' (process f) state $ zip es [0..]
+    _ -> state
+    where process f st (ex, i) = addConnection this (getPoint name ex) newSt 
+              where this = Argument f i
+                    newSt = case ex of AST.Application _ es -> connectExpression name st ex ; _ -> st
+          connect [e1, e2] = addConnection (getPoint name e1) (getPoint name e2) step2
+              where step1 = connectExpression name state e1
+                    step2 = connectExpression name step1 e2
+{% endhighlight %}
+
+Now that we have everything connected up, we take that graph and split it up into components. There's
+already a library for that included with Haskell Platform. Each of those components has to have a single
+type assigned to them.
+The natively implemented functions already have their types hardcoded, and if there's a native function somewhere
+in a component, we know the types of everything in that component. If there isn't, it means that everything in
+that component is unused. The input ultimately comes from the user in a form of a string that we can parse into
+other types. If any part of the component was used in executable code, we would know it's type because we would know
+the types of the arguments.
+That's not a proof, but it should be convincing enough.
+
+Summary
+-------
+
+And there you have it! Simple!
+The implementation wasn't written to be efficient but the algorithm itself should be relatively fast.
+Probably somewhere between linear and quadratic complexity WRT to the number of `TypePoint`s. Even the 
+implementation should be at least quadratic.
+
+The code as it looks at the time of the writing is available [here](https://github.com/LukaHorvat/Hash/tree/39800263600e0dd9845e2aab39ab4f14bb845575).
+I've only covered the type checker in this post, but the interpreter itself is also fully functional and relatively
+interesting.

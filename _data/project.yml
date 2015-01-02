@@ -4,3 +4,6 @@ fsharp-drawer:
 compose:
     name: Compose
     description: "A component based game library for Haskell"
+hash:
+    name: Hash
+    description: "A simple bash-like language written in Haskell"
