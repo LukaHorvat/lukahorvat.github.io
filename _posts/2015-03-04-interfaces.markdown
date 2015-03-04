@@ -7,12 +7,13 @@ categories: programming
 project_id: interface
 ---
 Haskell doesn't have interfaces which are a fundamental mechanism to achieve modularity in
-object-oriented languages. This might seem strange at first, but it turns out that type classes
-do a pretty good job of satisfying that need.
-In this post I'll present a more direct way that can be used to simulate interfaces using them.
+object-oriented languages. This might seem strange at first, but it turns out that isn't a problem
+because type classes fill a similar role.
+In this post, however, I'll present a more direct way that can be used to simulate interfaces using them.
 
 You might be able to deduce something about the expressivity of one mechanism compared to the other,
 but I'm not nearly informed enough to do that. Besides, I'm sure it's already been done.
+This is mostly meant as an interesting proof of concept. Not an actual, useful thing.
 
 The class
 ---------
