@@ -7,3 +7,6 @@ compose:
 hash:
     name: Hash
     description: "A simple bash-like language written in Haskell"
+interface:
+    name: Interface
+    description: "OO-style interfaces for Haskell"
