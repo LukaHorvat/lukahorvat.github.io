@@ -10,3 +10,6 @@ hash:
 interface:
     name: Interface
     description: "OO-style interfaces for Haskell"
+status-bar:
+    name: StatusBar
+    description: "A desktop status bar."
