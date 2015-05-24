@@ -13,3 +13,6 @@ interface:
 status-bar:
     name: StatusBar
     description: "A desktop status bar."
+haskellforms:
+    name: "HaskellForms"
+    description: "WinForms bindings for Haskell"
