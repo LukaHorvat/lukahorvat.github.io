@@ -11,3 +11,4 @@ github_username: LukaHorvat
 # Build settings
 markdown: kramdown
 permalink: pretty
+highlighter: rouge
