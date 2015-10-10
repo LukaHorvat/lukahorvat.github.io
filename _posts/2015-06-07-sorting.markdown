@@ -2,7 +2,7 @@
 layout: post
 title: Radix sort
 description: Presenting different ways to implement radix sort in Haskell
-date: {}
+date: 2015-06-07T16:10:00.000Z
 categories: programming
 published: true
 ---
