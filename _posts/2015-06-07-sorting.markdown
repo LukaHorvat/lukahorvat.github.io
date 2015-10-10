@@ -428,7 +428,3 @@ All in all I'm still pretty happy that I managed to write something that outperf
 implementation.
 I'll probably come back to this subject later and see if we can implement some other algorithms or
 improve the above implementations.
-
-```haskell
-main = print "hello" >> print "world"
-```
