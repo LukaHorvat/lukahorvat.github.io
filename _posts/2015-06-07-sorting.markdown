@@ -2,9 +2,11 @@
 layout: post
 title: Radix sort
 description: Presenting different ways to implement radix sort in Haskell
-date: 2015-06-07 16:10:00
+date: {}
 categories: programming
+published: true
 ---
+
 [Ed's `discrimination` package](https://github.com/ekmett/discrimination) seemed very interesting to me.
 I was vaguely aware of sorting algorithms not based on comparison but I didn't realize that you could
 achieve such impressive asymptotics with them.
@@ -425,4 +427,8 @@ it takes the same ammount of time. This isn't true for `Data.List.sort` which is
 All in all I'm still pretty happy that I managed to write something that outperforms the default
 implementation.
 I'll probably come back to this subject later and see if we can implement some other algorithms or
-imprve the above implementations.
+improve the above implementations.
+
+```haskell
+main = print "hello" >> print "world"
+```
